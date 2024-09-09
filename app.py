@@ -66,7 +66,7 @@ with st.sidebar:
 # Load the dataset
 @st.cache_data
 def load_data():
-    file_path = "C:/Users/GUEST ADMIN/Desktop/Data Science/Analysis of House Price/data.csv"
+    file_path = "data.csv"
     data = pd.read_csv(file_path)
     return data
 
