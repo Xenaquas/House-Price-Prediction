@@ -48,9 +48,10 @@ Requirements:
 
 Usage:
 1. Run the application using the following command:
- 
-  ```bash
-  streamlit run app.py
+   ```bash
+   streamlit run app.py
+
+
 2. Navigate through the different sections using the side navigation bar to explore data, visualize insights, and make predictions.
 
 
