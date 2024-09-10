@@ -361,7 +361,7 @@ elif page == "Geospatial Analysis":
             # 2nd Geo-Visual: House Prices in Mumbai using Plotly Express
             st.subheader("Map of House Prices in Mumbai (Plotly Express)")
             st.write("Here is a map showing the distribution of house prices across Mumbai.")
-            data = pd.read_csv("C:/Users/GUEST ADMIN/Desktop/Data Science/Analysis of House Price/Mumbai_updated.csv")
+            data = pd.read_csv("data.csv")
             data.replace(9, pd.NA, inplace=True)
             data.dropna(inplace=True)
             fig = px.scatter_geo(data, lat='Latitude', lon='Longitude', hover_name='Price', title='House Prices in Mumbai', projection="natural earth")
@@ -489,7 +489,7 @@ elif page == "Model":
     st.header("Train and Evaluate Machine Learning Models")
 
     # Load and preprocess the data
-    data = pd.read_csv("C:/Users/GUEST ADMIN/Desktop/Data Science/Analysis of House Price/data.csv")
+    data = pd.read_csv("data.csv")
     data = pd.get_dummies(data, columns=['Location', 'State', 'Country'], drop_first=True)
 
     # Define features and target
@@ -535,7 +535,7 @@ elif page == "Model":
         model.fit(X_train, y_train)
 
         # Save the trained model
-        joblib.dump(model, 'house_price_model.pkl')
+        # joblib.dump(model, 'house_price_model.pkl')
 
         # Predict and evaluate the model
         y_pred = model.predict(X_test)
@@ -570,7 +570,7 @@ elif page == "Prediction":
     st.write("Enter the features of the house to get a predicted price.")
 
     # Load data for dropdown options
-    data = pd.read_csv("C:/Users/GUEST ADMIN/Desktop/Data Science/Analysis of House Price/data.csv")
+    data = pd.read_csv("data.csv")
 
     # Default values for user input
     default_values = {
