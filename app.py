@@ -172,13 +172,21 @@ elif page == "Visualizations":
             fig_hist.update_layout(bargap=0.2, xaxis_title='Price', yaxis_title='Count', template='plotly_dark')
             st.plotly_chart(fig_hist, use_container_width=True)
 
+    # Handling errors to ensure no invalid data affects plotting
+    data['Area'] = pd.to_numeric(data['Area'], errors='coerce')
+    data['Price'] = pd.to_numeric(data['Price'], errors='coerce')
+
+    # Drop rows with NaN values in 'Area' or 'Price' after conversion
+    data = data.dropna(subset=['Area', 'Price'])
+
     with st.expander("House Prices by Area"):
         with chart_container(data[['Price', 'Area']]):
             # House Prices by Area
             st.subheader("House Prices by Area")
             st.info("This scatter plot shows the relationship between house prices and the area of the houses. It includes a trendline to help visualize the correlation.")
-            fig_scatter = px.scatter(data, x='Area', y='Price', color='Location', title='House Prices by Area',
-                     hover_data=['No. of Bedrooms', 'School', 'Price_per_sqft', 'Total_Amenities'])
+            fig_scatter = px.scatter(data, x='Area', y='Price', trendline='ols', title='House Prices by Area', color='Price',
+                                     color_continuous_scale=px.colors.sequential.Viridis)
+            fig_scatter.update_traces(marker=dict(size=8, opacity=0.8))
             fig_scatter.update_layout(xaxis_title='Area (sq ft)', yaxis_title='Price (in lakhs)', template='plotly_dark')
             st.plotly_chart(fig_scatter, use_container_width=True)
 
