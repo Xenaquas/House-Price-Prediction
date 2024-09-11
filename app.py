@@ -177,7 +177,7 @@ elif page == "Visualizations":
             # House Prices by Area
             st.subheader("House Prices by Area")
             st.info("This scatter plot shows the relationship between house prices and the area of the houses. It includes a trendline to help visualize the correlation.")
-            px.scatter(data, x='Area', y='Price', color='Location', title='House Prices by Area',
+            fig_scatter = px.scatter(data, x='Area', y='Price', color='Location', title='House Prices by Area',
                      hover_data=['No. of Bedrooms', 'School', 'Price_per_sqft', 'Total_Amenities'])
             fig_scatter.update_layout(xaxis_title='Area (sq ft)', yaxis_title='Price (in lakhs)', template='plotly_dark')
             st.plotly_chart(fig_scatter, use_container_width=True)
