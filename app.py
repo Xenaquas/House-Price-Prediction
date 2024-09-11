@@ -558,7 +558,7 @@ elif page == "Model":
             if model_choice == "Linear Regression":
                 model = LinearRegression()
             elif model_choice == "Polynomial Regression":
-                degree = st.sidebar.slider("Degree of Polynomial", min_value=2, max_value=5, value=2)
+                degree = st.sidebar.slider("Degree of Polynomial", min_value=2, max_value=3, value=2)
                 poly_features = PolynomialFeatures(degree=degree)
                 X_train = poly_features.fit_transform(X_train)
                 X_test = poly_features.transform(X_test)
