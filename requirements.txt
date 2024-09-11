@@ -8,3 +8,4 @@ plotly
 folium
 streamlit-folium
 joblib
+statsmodels
