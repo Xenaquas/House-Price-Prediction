@@ -493,49 +493,22 @@ elif page == "Filterized Data":
 
 # Model Page
 elif page == "Model":
-    # Function to load data
-    @st.cache_data
-    def load_data(filepath):
-        data = pd.read_csv(filepath)
-        data = pd.get_dummies(data, columns=['Location', 'State', 'Country'], drop_first=True)
-        return data
-
-    # Function to train and evaluate the model
-    def train_evaluate_model(X_train, y_train, X_test, y_test, model):
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-        mse = mean_squared_error(y_test, y_pred)
-        mae = mean_absolute_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
-        return model, y_pred, mse, mae, r2
-
-    # Function to load the trained model if exists
-    def load_trained_model(model_path):
-        if os.path.exists(model_path):
-            model = joblib.load(model_path)
-            return model
-        return None
-
-    # Function to evaluate using the loaded model
-    def evaluate_loaded_model(model, X_test, y_test):
-        y_pred = model.predict(X_test)
-        mse = mean_squared_error(y_test, y_pred)
-        mae = mean_absolute_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
-        return y_pred, mse, mae, r2
-
-
-    # Main App
+    # Load and preprocess the data
     st.header("Train and Evaluate Machine Learning Models")
 
     # Load the data
-    data = load_data("data.csv")
+    data = pd.read_csv("data.csv")
+
+    # Convert categorical features to dummy variables
+    data = pd.get_dummies(data, columns=['Location', 'State', 'Country'], drop_first=True)
+
+    # Define features and target
     features = [col for col in data.columns if col != 'Price']
     target = 'Price'
     X = data[features]
     y = data[target]
 
-    # Split the data into training and testing sets
+    # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Sidebar for model selection
@@ -544,44 +517,41 @@ elif page == "Model":
                                                          "Ridge Regression", "Lasso Regression",
                                                          "Decision Tree", "Random Forest"])
 
-    model_path = f'{model_choice.replace(" ", "_").lower()}_model.pkl'
+    # Training the selected model
+    with st.spinner(f"Training the {model_choice} model, please wait..."):
+        # Model selection logic
+        if model_choice == "Linear Regression":
+            model = LinearRegression()
+        elif model_choice == "Polynomial Regression":
+            degree = st.sidebar.slider("Degree of Polynomial", min_value=2, max_value=5, value=2)
+            poly_features = PolynomialFeatures(degree=degree)
+            X_train = poly_features.fit_transform(X_train)
+            X_test = poly_features.transform(X_test)
+            model = LinearRegression()
+        elif model_choice == "Ridge Regression":
+            alpha = st.sidebar.slider("Alpha", min_value=0.01, max_value=10.0, value=1.0)
+            model = Ridge(alpha=alpha)
+        elif model_choice == "Lasso Regression":
+            alpha = st.sidebar.slider("Alpha", min_value=0.01, max_value=10.0, value=1.0)
+            model = Lasso(alpha=alpha)
+        elif model_choice == "Decision Tree":
+            max_depth = st.sidebar.slider("Max Depth", min_value=1, max_value=20, value=5)
+            model = DecisionTreeRegressor(max_depth=max_depth)
+        elif model_choice == "Random Forest":
+            n_estimators = st.sidebar.slider("Number of Estimators", min_value=10, max_value=100, value=50)
+            model = RandomForestRegressor(n_estimators=n_estimators)
 
-    # Check if the model is already trained and saved
-    loaded_model = load_trained_model(model_path)
+        # Train the model
+        model.fit(X_train, y_train)
 
-    if loaded_model:
-        st.success(f"Loaded the saved {model_choice} model for evaluation.")
-        y_pred, mse, mae, r2 = evaluate_loaded_model(loaded_model, X_test, y_test)
-    else:
-        with st.spinner(f"Training the {model_choice} model, please wait..."):
-            # Model selection logic
-            if model_choice == "Linear Regression":
-                model = LinearRegression()
-            elif model_choice == "Polynomial Regression":
-                degree = st.sidebar.slider("Degree of Polynomial", min_value=2, max_value=5, value=2)
-                poly_features = PolynomialFeatures(degree=degree)
-                X_train = poly_features.fit_transform(X_train)
-                X_test = poly_features.transform(X_test)
-                model = LinearRegression()
-            elif model_choice == "Ridge Regression":
-                alpha = st.sidebar.slider("Alpha", min_value=0.01, max_value=10.0, value=1.0)
-                model = Ridge(alpha=alpha)
-            elif model_choice == "Lasso Regression":
-                alpha = st.sidebar.slider("Alpha", min_value=0.01, max_value=10.0, value=1.0)
-                model = Lasso(alpha=alpha)
-            elif model_choice == "Decision Tree":
-                max_depth = st.sidebar.slider("Max Depth", min_value=1, max_value=20, value=5)
-                model = DecisionTreeRegressor(max_depth=max_depth)
-            elif model_choice == "Random Forest":
-                n_estimators = st.sidebar.slider("Number of Estimators", min_value=10, max_value=100, value=50)
-                model = RandomForestRegressor(n_estimators=n_estimators)
+        # Save the trained model
+        joblib.dump(model, 'house_price_model.pkl')
 
-            # Train and evaluate the model
-            model, y_pred, mse, mae, r2 = train_evaluate_model(X_train, y_train, X_test, y_test, model)
-
-            # Save the trained model for future use
-            joblib.dump(model, model_path)
-            st.success(f"Trained and saved the {model_choice} model successfully.")
+        # Predict and evaluate the model
+        y_pred = model.predict(X_test)
+        mse = mean_squared_error(y_test, y_pred)
+        mae = mean_absolute_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
 
     # Display evaluation metrics
     st.write(f"### Model: {model_choice}")
@@ -589,6 +559,41 @@ elif page == "Model":
     st.metric("Mean Absolute Error", f"{mae:.2f}")
     st.metric("R-squared", f"{r2:.2f}")
 
+    # Visualization using Plotly
+    st.write("### Actual vs. Predicted House Prices")
+
+    # Create a DataFrame for actual vs. predicted values
+    results_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+
+    # Create a scatter plot for actual vs predicted values
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=results_df['Actual'],
+        y=results_df['Predicted'],
+        mode='markers',
+        name='Predicted vs. Actual',
+        marker=dict(color='yellow', size=6, line=dict(width=1))
+    ))
+    fig.add_trace(go.Scatter(
+        x=results_df['Actual'],
+        y=results_df['Actual'],
+        mode='lines',
+        name='Perfect Prediction',
+        line=dict(color='red', dash='dash')
+    ))
+
+    # Customize layout
+    fig.update_layout(
+        title=f"{model_choice} - Actual vs Predicted Prices",
+        xaxis_title="Actual Prices",
+        yaxis_title="Predicted Prices",
+        showlegend=True,
+        legend=dict(x=0, y=1)
+    )
+
+    # Display the figure
+    st.plotly_chart(fig, use_container_width=True)
+        
 # Streamlit Prediction Page
 elif page == "Prediction":
     st.header("Predict House Prices")
