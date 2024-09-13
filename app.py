@@ -9,7 +9,7 @@ from streamlit_extras.chart_container import chart_container
 
 # Machine Learning models library
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, SGDRegressor
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -123,7 +123,7 @@ elif page == "Dataset":
     # Display dataset statistics
     st.subheader("Dataset Statistics")
     st.write(data.describe())
-    st.write(data.shape)
+    # st.write(data.shape)
     st.markdown("---")
 
     # Show dataset columns
@@ -491,7 +491,6 @@ elif page == "Filterized Data":
     if __name__ == "__main__":
         main()
 
-
 # Model Page
 elif page == "Model":
     # Load and preprocess the data
@@ -560,6 +559,10 @@ elif page == "Model":
     st.metric("Mean Absolute Error", f"{mae:.2f}")
     st.metric("R-squared", f"{r2:.2f}")
 
+    st.write("---")
+    st.write("#")
+
+
     # Visualization using Plotly
     st.write("### Actual vs. Predicted House Prices")
 
@@ -595,7 +598,6 @@ elif page == "Model":
     # Display the figure
     st.plotly_chart(fig, use_container_width=True)
 
-        
 # Streamlit Prediction Page
 elif page == "Prediction":
     st.header("Predict House Prices")
