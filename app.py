@@ -491,6 +491,7 @@ elif page == "Filterized Data":
     if __name__ == "__main__":
         main()
 
+
 # Model Page
 elif page == "Model":
     # Load and preprocess the data
@@ -593,6 +594,7 @@ elif page == "Model":
 
     # Display the figure
     st.plotly_chart(fig, use_container_width=True)
+
         
 # Streamlit Prediction Page
 elif page == "Prediction":
