@@ -20,7 +20,7 @@ A data-driven web application built using Streamlit and Python libraries to pred
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com//Xenaquas/House-Price-Prediction.git
+   git clone https://github.com/Xenaquas/House-Price-Prediction.git
 
 2. Navigate to the project directory:
 
